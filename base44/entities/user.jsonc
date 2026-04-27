@@ -1,0 +1,39 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile picture URL"
+    },
+    "status_text": {
+      "type": "string",
+      "default": "Hey there! I am using ChatApp",
+      "description": "User status/about text"
+    },
+    "is_online": {
+      "type": "boolean",
+      "default": false
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "phone": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "avatar_url",
+    "last_seen",
+    "phone"
+  ]
+}

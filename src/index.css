@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Poppins', sans-serif;
+    --background: 140 10% 97%;
+    --foreground: 200 15% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 200 15% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 15% 10%;
+    --primary: 180 61% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 140 15% 93%;
+    --secondary-foreground: 200 15% 15%;
+    --muted: 140 10% 94%;
+    --muted-foreground: 200 8% 48%;
+    --accent: 152 55% 92%;
+    --accent-foreground: 152 60% 28%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 140 10% 90%;
+    --input: 140 10% 88%;
+    --ring: 152 60% 38%;
+    --chart-1: 152 60% 38%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.75rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 152 60% 38%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 152 60% 38%;
+  }
+
+  .dark {
+    --background: 200 15% 8%;
+    --foreground: 140 10% 95%;
+    --card: 200 15% 11%;
+    --card-foreground: 140 10% 95%;
+    --popover: 200 15% 11%;
+    --popover-foreground: 140 10% 95%;
+    --primary: 152 55% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 200 12% 16%;
+    --secondary-foreground: 140 10% 90%;
+    --muted: 200 12% 16%;
+    --muted-foreground: 200 8% 55%;
+    --accent: 152 40% 18%;
+    --accent-foreground: 152 55% 70%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 200 12% 18%;
+    --input: 200 12% 18%;
+    --ring: 152 55% 45%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 200 15% 8%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 152 55% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 152 55% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Range slider styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 999px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid hsl(var(--primary));
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid hsl(var(--primary));
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 999px;
+}
+
+/* Chat bubble tail animation */
+@keyframes messageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.message-in {
+  animation: messageIn 0.2s ease-out forwards;
+}
+
+/* Typing indicator dots animation */
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* Barcode scanner - make body transparent so camera shows through */
+body.scanner-active {
+  background: transparent !important;
+}
+body.scanner-active #root {
+  background: transparent !important;
+}
+
+/* Scan line animation for QR scanner */
+@keyframes scanLine {
+  0% { top: 8px; }
+  50% { top: calc(100% - 8px); }
+  100% { top: 8px; }
+}
+.animate-scan-line {
+  animation: scanLine 2s ease-in-out infinite;
+}

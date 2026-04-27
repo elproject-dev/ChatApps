@@ -1,0 +1,47 @@
+{
+  "name": "Conversation",
+  "type": "object",
+  "properties": {
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of participant emails"
+    },
+    "participant_names": {
+      "type": "object",
+      "description": "Map of email to display name"
+    },
+    "last_message": {
+      "type": "string",
+      "description": "Preview of the last message"
+    },
+    "last_message_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last message"
+    },
+    "last_message_sender": {
+      "type": "string",
+      "description": "Email of the last message sender"
+    },
+    "is_group": {
+      "type": "boolean",
+      "default": false
+    },
+    "group_name": {
+      "type": "string"
+    },
+    "group_avatar": {
+      "type": "string"
+    },
+    "unread_count": {
+      "type": "object",
+      "description": "Map of email to unread count"
+    }
+  },
+  "required": [
+    "participants"
+  ]
+}
