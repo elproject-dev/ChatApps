@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Check, CheckCheck, Download, Loader2, Link2, Globe, Play, Pause, Volume2, Video } from 'lucide-react';
+import { Check, CheckCheck, Download, Globe, Play, Pause, Volume2, Video } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { registerPlugin } from '@capacitor/core';
 

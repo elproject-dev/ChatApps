@@ -1,11 +1,11 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { conversationOperations, messageOperations, userOperations } from '@/api/supabaseHelpers';
 import { useAuth } from '@/lib/AuthContext';
 import { supabase } from '@/api/supabaseClient';
-import { ArrowLeft, Phone, Video, MoreVertical, X, Download } from 'lucide-react';
+import { Phone, X, Download } from 'lucide-react';
 import { format, isToday, isYesterday } from 'date-fns';
 import MessageBubble from '../components/chat/MessageBubble';
 import ChatInput from '../components/chat/ChatInput';

@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { contactOperations, userOperations } from '@/api/supabaseHelpers';
 import { QRCodeSVG } from 'qrcode.react';
 import { Capacitor } from '@capacitor/core';
-import { X, ScanLine, CheckCircle, AlertCircle, UserPlus, Camera, QrCode } from 'lucide-react';
+import { X, ScanLine, CheckCircle, AlertCircle, UserPlus, Camera } from 'lucide-react';
 import Avatar from '../components/chat/Avatar';
 import { toast } from 'sonner';
 

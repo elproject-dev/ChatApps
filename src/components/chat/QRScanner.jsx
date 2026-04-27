@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ScanLine, CheckCircle, AlertCircle, UserPlus, Camera } from 'lucide-react';
+import { X, CheckCircle, AlertCircle, UserPlus, Camera } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { contactOperations, userOperations } from '@/api/supabaseHelpers';
 import { toast } from 'sonner';

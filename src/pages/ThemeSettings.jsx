@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Sun, Moon, Check, Palette, RotateCcw } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Sun, Moon, Check, Palette, RotateCcw } from 'lucide-react';
 import { useTheme } from '@/lib/ThemeContext';
 
 export default function ThemeSettings() {

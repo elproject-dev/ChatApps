@@ -1,26 +1,33 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Phone, PhoneOff, PhoneIncoming, PhoneMissed, Volume2, User, PhoneCall } from 'lucide-react';
-import { initiateCall, answerCall, rejectCall, endCall, setCallbacks, getRingingCall } from '@/lib/webrtc';
+import { Phone, PhoneOff, PhoneMissed, Volume2, User, Speaker } from 'lucide-react';
+import { answerCall, rejectCall, endCall, setCallbacks, getRingingCall } from '@/lib/webrtc';
 import { userOperations } from '@/api/supabaseHelpers';
-import { Capacitor, registerPlugin } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 
-export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
-  const [status, setStatus] = useState(callData?.status || 'idle'); // idle, ringing, dialing, ringing_remote, connected
+export default function CallScreen({ callData, currentUserEmail, onCallEnd, calleeReachable }) {
+  const isCaller = callData?.caller_email === currentUserEmail;
+  const otherEmail = isCaller ? callData?.callee_email : callData?.caller_email;
+  
+  // Force 'dialing' status initially for caller to allow validation
+  const [status, setStatus] = useState(() => {
+    if (isCaller) {
+      return 'dialing';
+    }
+    return callData?.status || 'idle';
+  });
+
   const [callDuration, setCallDuration] = useState(0);
   const [remoteStream, setRemoteStream] = useState(null);
-  const [otherUserName, setOtherUserName] = useState('');
+  const [otherUserName, setOtherUserName] = useState('Loading...');
   const [otherUserAvatar, setOtherUserAvatar] = useState('');
+  const [isSpeakerphone, setIsSpeakerphone] = useState(false);
   const remoteAudioRef = useRef(null);
   const durationInterval = useRef(null);
   const currentCallId = useRef(callData?.id || null);
   const ringbackIntervalRef = useRef(null);
   const ringbackAudioRef = useRef(null);
 
-  const isCaller = callData?.caller_email === currentUserEmail;
-  const otherEmail = isCaller ? callData?.callee_email : callData?.caller_email;
-
-  // Fetch other user name and avatar
   useEffect(() => {
     if (otherEmail) {
       userOperations.getById(otherEmail).then((user) => {
@@ -33,7 +40,6 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
     }
   }, [otherEmail]);
 
-  // Handle remote stream
   const handleRemoteStream = useCallback((stream) => {
     setRemoteStream(stream);
     if (remoteAudioRef.current) {
@@ -45,17 +51,48 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
   // Stop native call ringtone and cancel notification
   const stopNativeRingtone = async () => {
     try {
-      const { Capacitor, registerPlugin } = await import('@capacitor/core');
       if (Capacitor.isNativePlatform()) {
+        const { registerPlugin } = await import('@capacitor/core');
         const CallNotification = registerPlugin('CallNotification');
         CallNotification.stopRingtone().catch(() => {});
       }
     } catch (_) {}
   };
 
+  const setNativeSpeakerphone = async (enabled) => {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const { registerPlugin } = await import('@capacitor/core');
+        const CallNotification = registerPlugin('CallNotification');
+        await CallNotification.setSpeakerphoneOn({ enabled });
+      }
+    } catch (e) {
+      console.error('Failed to set native speakerphone:', e);
+    }
+  };
+
+  const resetNativeAudioMode = async () => {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const { registerPlugin } = await import('@capacitor/core');
+        const CallNotification = registerPlugin('CallNotification');
+        await CallNotification.resetAudioMode();
+      }
+    } catch (e) {
+      console.error('Failed to reset native audio mode:', e);
+    }
+  };
+
+  const toggleSpeakerphone = () => {
+    const newState = !isSpeakerphone;
+    setIsSpeakerphone(newState);
+    setNativeSpeakerphone(newState);
+  };
+
   // Handle call ended
   const handleCallEnded = useCallback(() => {
     stopNativeRingtone();
+    resetNativeAudioMode();
     setStatus('ended');
     if (durationInterval.current) clearInterval(durationInterval.current);
     setTimeout(() => onCallEnd(), 1500);
@@ -122,6 +159,7 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
   // Handle call connected with shared timestamp (caller receives this from Realtime)
   const handleCallConnected = useCallback((connectedAt) => {
     stopRingbackTone();
+    setNativeSpeakerphone(false); // Default to earpiece for caller
     setStatus('connected');
     startDurationCounter(connectedAt);
   }, [startDurationCounter, stopRingbackTone]);
@@ -135,24 +173,37 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
     });
   }, [handleRemoteStream, handleCallEnded, handleCallStatus, handleCallConnected]);
 
-  // If callee and call is ringing, show incoming call UI
+  // Status management for caller/callee
   useEffect(() => {
-    if (callData?.status === 'ringing' && !isCaller) {
-      setStatus('ringing');
-    } else if (callData?.status === 'ringing' && isCaller) {
-      setStatus('dialing');
+    if (isCaller) {
+      if (callData?.status === 'connected') {
+        setStatus('connected');
+      } else {
+        setStatus('dialing');
+      }
+    } else {
+      if (callData?.status === 'ringing') {
+        setStatus('ringing');
+      } else if (callData?.status === 'connected') {
+        setStatus('connected');
+      }
+    }
+  }, [isCaller, callData?.status]);
+
+  // Handle Ringback Tone separately
+  useEffect(() => {
+    if (status === 'dialing') {
       startRingbackTone();
-      // After 3s, switch to "Berdering" (callee device is ringing by then)
-      setTimeout(() => setStatus((s) => s === 'dialing' ? 'ringing_remote' : s), 3000);
     }
     return () => stopRingbackTone();
-  }, [callData, isCaller, startRingbackTone, stopRingbackTone]);
+  }, [status, startRingbackTone, stopRingbackTone]);
 
   // Cleanup: stop native ringtone and ringback when CallScreen unmounts
   useEffect(() => {
     return () => {
       stopNativeRingtone();
       stopRingbackTone();
+      resetNativeAudioMode();
     };
   }, []);
 
@@ -180,6 +231,7 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
       await answerCall(fullCallData);
       console.log('[CallScreen] answerCall succeeded');
       stopRingbackTone();
+      setNativeSpeakerphone(false); // Default to earpiece
       setStatus('connected');
       currentCallId.current = fullCallData.id;
       // Start duration counter using the same connectedAt timestamp saved to DB
@@ -268,7 +320,6 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
           <p className="text-white/80 text-lg font-medium">
             {status === 'ringing' && 'Panggilan masuk...'}
             {status === 'dialing' && 'Menghubungi...'}
-            {status === 'ringing_remote' && 'Berdering...'}
             {status === 'connected' && formatDuration(callDuration)}
             {status === 'ended' && 'Panggilan berakhir'}
           </p>
@@ -285,7 +336,7 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
           </div>
         )}
 
-        {(status === 'dialing' || status === 'ringing_remote') && (
+        {status === 'dialing' && (
           <div className="flex gap-3">
             <div className="w-4 h-4 rounded-full bg-white/60 animate-bounce" style={{ animationDelay: '0ms' }} />
             <div className="w-4 h-4 rounded-full bg-white/60 animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -294,9 +345,17 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
         )}
 
         {status === 'connected' && (
-          <div className="flex items-center gap-2 text-white/70 text-sm">
-            <Volume2 className="w-4 h-4" />
-            <span>Panggilan aktif</span>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 text-white/70 text-sm">
+              <Volume2 className="w-4 h-4" />
+              <span>Panggilan aktif</span>
+            </div>
+            <button
+              onClick={toggleSpeakerphone}
+              className={`p-4 rounded-full transition-all ${isSpeakerphone ? 'bg-white text-primary' : 'bg-white/10 text-white hover:bg-white/20'}`}
+            >
+              <Speaker className="w-6 h-6" />
+            </button>
           </div>
         )}
       </div>
@@ -322,16 +381,13 @@ export default function CallScreen({ callData, currentUserEmail, onCallEnd }) {
           </>
         )}
 
-        {(status === 'dialing' || status === 'ringing_remote' || status === 'connected') && (
-          <>
-            {/* End call button */}
-            <button
-              onClick={handleEndCall}
-              className="w-20 h-20 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-2xl shadow-red-500/30 active:scale-90 transition-all duration-200 hover:shadow-red-500/50"
-            >
-              <PhoneOff className="w-9 h-9 text-white" />
-            </button>
-          </>
+        {(status === 'dialing' || status === 'connected') && (
+          <button
+            onClick={handleEndCall}
+            className="w-20 h-20 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-2xl shadow-red-500/30 active:scale-90 transition-all duration-200 hover:shadow-red-500/50"
+          >
+            <PhoneOff className="w-9 h-9 text-white" />
+          </button>
         )}
 
         {status === 'ended' && (

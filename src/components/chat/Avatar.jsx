@@ -1,5 +1,4 @@
 import React from 'react';
-import { User } from 'lucide-react';
 
 export default function Avatar({ src = undefined, name, size = 'md', isOnline = false }) {
   const sizes = {

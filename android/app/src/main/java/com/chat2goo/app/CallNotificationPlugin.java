@@ -2,6 +2,7 @@ package com.chat2goo.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.util.Log;
 
 import com.getcapacitor.JSObject;
@@ -137,6 +138,43 @@ public class CallNotificationPlugin extends Plugin {
         } catch (Exception e) {
             Log.e(TAG, "Failed to get rejected call: " + e.getMessage());
             call.reject("Failed to get rejected call: " + e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void setSpeakerphoneOn(PluginCall call) {
+        try {
+            boolean enabled = call.getBoolean("enabled", false);
+            AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager != null) {
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                audioManager.setSpeakerphoneOn(enabled);
+                Log.d(TAG, "Speakerphone set to: " + enabled);
+                call.resolve(new JSObject().put("success", true));
+            } else {
+                call.reject("AudioManager not available");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to set speakerphone: " + e.getMessage());
+            call.reject("Failed to set speakerphone: " + e.getMessage());
+        }
+    }
+
+    @PluginMethod
+    public void resetAudioMode(PluginCall call) {
+        try {
+            AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager != null) {
+                audioManager.setSpeakerphoneOn(false);
+                audioManager.setMode(AudioManager.MODE_NORMAL);
+                Log.d(TAG, "Audio mode reset to NORMAL");
+                call.resolve(new JSObject().put("success", true));
+            } else {
+                call.reject("AudioManager not available");
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to reset audio mode: " + e.getMessage());
+            call.reject("Failed to reset audio mode: " + e.getMessage());
         }
     }
 }

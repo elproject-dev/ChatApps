@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
-import { Bell, Volume2, VolumeX, Check, Vibrate, Music } from 'lucide-react';
-import { Capacitor } from '@capacitor/core';
+import { Volume2, VolumeX, Check, Vibrate, Music } from 'lucide-react';
 import { Preferences } from '@capacitor/preferences';
 import { toast } from 'sonner';
 

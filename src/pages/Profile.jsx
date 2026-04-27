@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { userOperations, uploadFile } from '@/api/supabaseHelpers';
 import { useAuth } from '@/lib/AuthContext';
 import { useTheme } from '@/lib/ThemeContext';
-import { ArrowLeft, Camera, Pencil, Check, LogOut, Shield, Bell, Moon, CircleHelp, X, QrCode, ScanLine } from 'lucide-react';
+import { Camera, Pencil, Check, LogOut, Shield, Bell, Moon, CircleHelp, X, QrCode, ScanLine } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Avatar from '../components/chat/Avatar';
 import { Input } from '@/components/ui/input';

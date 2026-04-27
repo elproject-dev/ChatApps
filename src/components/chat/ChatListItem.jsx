@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { format, isToday, isYesterday } from 'date-fns';
-import { Check, CheckCheck, Image, FileText, Trash2 } from 'lucide-react';
+import { CheckCheck } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { userOperations, conversationOperations } from '@/api/supabaseHelpers';
 import { supabase } from '@/api/supabaseClient';
