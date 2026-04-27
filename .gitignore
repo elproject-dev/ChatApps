@@ -3,6 +3,12 @@
 .env.*
 .env.local
 
+# Secrets - never push these
+chatapps-65e59-firebase-adminsdk-fbsvc-6f3111eaf1.json
+fcm_secret.txt
+fcm_secret_oneline.json
+android/app/release.keystore
+
 # Logs
 /logs
 *.log
