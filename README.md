@@ -5,7 +5,7 @@ Aplikasi chat real-time dengan fitur panggilan suara/video, notifikasi push, dan
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="screenshots/iPhone-13-PRO-localhost.webp" width="200" alt="Chat List">
+  
   <img src="screenshots/iPhone-13-PRO-localhost (1).webp" width="200" alt="Chat Room">
   <img src="screenshots/iPhone-13-PRO-localhost (2).webp" width="200" alt="Call Screen">
   <img src="screenshots/iPhone-13-PRO-localhost (3).webp" width="200" alt="Contacts">
